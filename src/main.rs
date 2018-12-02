@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::{self, BufReader, BufRead, Lines};
 
 mod day01;
+mod day02;
 
 pub type StarResult = Result<(), Box<Error>>;
 
@@ -24,6 +25,8 @@ impl<T: Display + Debug> Error for StarError<T> {
 fn main() -> Result<(), Box<Error>> {
     day01::star1(solve("day01/input")?)?;
     day01::star2(solve("day01/input")?)?;
+    day02::star1(solve("day02/input")?)?;
+    day02::star2(solve("day02/input")?)?;
     Ok(())
 }
 
