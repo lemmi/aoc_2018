@@ -10,6 +10,7 @@ extern crate itertools;
 use chrono::{DateTime, Datelike, Local};
 
 mod day01;
+mod day02;
 mod day03;
 mod day04;
 mod day05;
@@ -78,6 +79,10 @@ fn main() -> Result<(), StarError> {
         1 => {
             day01::star1(solve("day01/input")?)?;
             day01::star2(solve("day01/input")?)?;
+        }
+        2 => {
+            day02::star1(solve("day02/input")?)?;
+            day02::star2(solve("day02/input")?)?;
         }
         3 => {
             day03::star1(solve("day03/input")?)?;
