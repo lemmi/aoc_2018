@@ -6,6 +6,8 @@ use std::io::{self, BufRead, BufReader, Lines};
 extern crate chrono;
 extern crate itertools;
 
+use chrono::{DateTime, Datelike, Local};
+
 mod day01;
 mod day03;
 mod day04;
@@ -58,18 +60,35 @@ impl Error for StarError {}
 pub type StarResult = Result<(), StarError>;
 
 fn main() -> Result<(), StarError> {
-    day01::star1(solve("day01/input")?)?;
-    day01::star2(solve("day01/input")?)?;
-    day03::star1(solve("day03/input")?)?;
-    day03::star2(solve("day03/input")?)?;
-    day04::star1(solve("day04/input")?)?;
-    day04::star2(solve("day04/input")?)?;
-    day05::star1(solve("day05/input")?)?;
-    day05::star2(solve("day05/input")?)?;
-    day06::star1(solve("day06/input")?)?;
-    day06::star2(solve("day06/input")?)?;
-    day07::star1(solve("day07/input")?)?;
-    day07::star2(solve("day07/input")?)?;
+    let local: DateTime<Local> = Local::now();
+    println!("Running day {}", local.day());
+    match local.day() {
+        1 => {
+            day01::star1(solve("day01/input")?)?;
+            day01::star2(solve("day01/input")?)?;
+        }
+        3 => {
+            day03::star1(solve("day03/input")?)?;
+            day03::star2(solve("day03/input")?)?;
+        }
+        4 => {
+            day04::star1(solve("day04/input")?)?;
+            day04::star2(solve("day04/input")?)?;
+        }
+        5 => {
+            day05::star1(solve("day05/input")?)?;
+            day05::star2(solve("day05/input")?)?;
+        }
+        6 => {
+            day06::star1(solve("day06/input")?)?;
+            day06::star2(solve("day06/input")?)?;
+        }
+        7 => {
+            day07::star1(solve("day07/input")?)?;
+            day07::star2(solve("day07/input")?)?;
+        }
+        _ => (),
+    }
     Ok(())
 }
 
