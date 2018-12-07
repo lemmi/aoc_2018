@@ -1,18 +1,17 @@
-use std::fmt::{self, Display};
 use std::error::Error;
+use std::fmt::{self, Display};
 use std::fs::File;
-use std::io::{self, BufReader, BufRead, Lines};
+use std::io::{self, BufRead, BufReader, Lines};
 
 extern crate chrono;
 extern crate itertools;
 
-//mod day01;
-//mod day03;
-//mod day04;
-//mod day05;
-//mod day06;
+mod day01;
+mod day03;
+mod day04;
+mod day05;
+mod day06;
 mod day07;
-
 
 #[derive(Debug)]
 pub enum StarError {
@@ -54,22 +53,21 @@ impl<'a> From<&'a str> for StarError {
     }
 }
 
-impl Error for StarError {
-}
+impl Error for StarError {}
 
 pub type StarResult = Result<(), StarError>;
 
 fn main() -> Result<(), StarError> {
-//    day01::star1(solve("day01/input")?)?;
-//    day01::star2(solve("day01/input")?)?;
-//    day03::star1(solve("day03/input")?)?;
-//    day03::star2(solve("day03/input")?)?;
-//    day04::star1(solve("day04/input")?)?;
-//    day04::star2(solve("day04/input")?)?;
-//    day05::star1(solve("day05/input")?)?;
-//    day05::star2(solve("day05/input")?)?;
-//    day06::star1(solve("day06/input")?)?;
-//    day06::star2(solve("day06/input")?)?;
+    day01::star1(solve("day01/input")?)?;
+    day01::star2(solve("day01/input")?)?;
+    day03::star1(solve("day03/input")?)?;
+    day03::star2(solve("day03/input")?)?;
+    day04::star1(solve("day04/input")?)?;
+    day04::star2(solve("day04/input")?)?;
+    day05::star1(solve("day05/input")?)?;
+    day05::star2(solve("day05/input")?)?;
+    day06::star1(solve("day06/input")?)?;
+    day06::star2(solve("day06/input")?)?;
     day07::star1(solve("day07/input")?)?;
     day07::star2(solve("day07/input")?)?;
     Ok(())

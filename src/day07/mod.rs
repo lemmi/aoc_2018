@@ -1,13 +1,13 @@
-use std::collections::{HashMap,BTreeSet,BinaryHeap};
+use std::cmp::{Ordering, PartialOrd};
+use std::collections::{BTreeSet, BinaryHeap, HashMap};
 use std::io;
-use std::cmp::{Ordering,PartialOrd};
 use std::iter::FromIterator;
 
 use super::*;
 
 type Deps = BTreeSet<char>;
 
-#[derive(Clone,Debug,Eq,PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 struct Node {
     name: char,
     dep: Deps,
@@ -17,7 +17,7 @@ impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Node) -> Option<Ordering> {
         let p = if self.dep == other.dep {
             Some(self.name.cmp(&other.name))
-        } else  if self.dep.contains(&other.name) {
+        } else if self.dep.contains(&other.name) {
             Some(Ordering::Greater)
         } else if other.dep.contains(&self.name) {
             Some(Ordering::Less)
@@ -34,7 +34,7 @@ impl Display for Node {
         let mut sep = "";
         for dep in self.dep.iter() {
             write!(f, "{}{}", sep, dep)?;
-            sep=", ";
+            sep = ", ";
         }
         Ok(())
     }
@@ -42,11 +42,14 @@ impl Display for Node {
 
 impl Node {
     fn new(name: char) -> Node {
-        Node{name: name, dep: BTreeSet::new()}
+        Node {
+            name: name,
+            dep: BTreeSet::new(),
+        }
     }
-//    fn with_deps(name: char, deps: &Vec<char>) -> Node {
-//        Node{name: name, dep: deps.clone()}
-//    }
+    //    fn with_deps(name: char, deps: &Vec<char>) -> Node {
+    //        Node{name: name, dep: deps.clone()}
+    //    }
     fn add(&mut self, dep: char) {
         self.dep.insert(dep);
     }
@@ -56,15 +59,17 @@ impl Node {
 }
 
 struct Graph {
-    edges: HashMap<char,Node>,
+    edges: HashMap<char, Node>,
 }
 
 impl Graph {
     fn new() -> Graph {
-        Graph{edges: HashMap::new()}
+        Graph {
+            edges: HashMap::new(),
+        }
     }
 
-    fn build(lines: impl Iterator<Item = io::Result<String>>) -> Result<Graph,StarError> {
+    fn build(lines: impl Iterator<Item = io::Result<String>>) -> Result<Graph, StarError> {
         let mut g = Self::new();
         for r in lines.map(|l| l.map_err(|e| StarError::from(e))) {
             let s = r?;
@@ -95,10 +100,11 @@ impl Display for Graph {
 }
 
 fn next_work(todo: &Vec<Node>, done: &Vec<Node>) -> Option<usize> {
-    todo.iter().enumerate()
-        .filter(|(_,m)| m.satisfied(done.iter().map(|n| n.name)))
-        .min_by(|(_,a), (_,b)| a.partial_cmp(b).unwrap_or(a.name.cmp(&b.name)))
-        .map(|(i,_)| i)
+    todo.iter()
+        .enumerate()
+        .filter(|(_, m)| m.satisfied(done.iter().map(|n| n.name)))
+        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(a.name.cmp(&b.name)))
+        .map(|(i, _)| i)
 }
 
 fn toposort(v: &Vec<Node>) -> Vec<Node> {
@@ -111,7 +117,7 @@ fn toposort(v: &Vec<Node>) -> Vec<Node> {
             Some(i) => {
                 let n = todo.swap_remove(i);
                 done.push(n);
-            },
+            }
             None => panic!("Loop?"),
         }
     }
@@ -122,19 +128,22 @@ pub fn star1(lines: impl Iterator<Item = io::Result<String>>) -> StarResult {
     let g = Graph::build(lines)?;
     let v: Vec<Node> = g.edges.values().cloned().collect();
     let v = toposort(&v);
-    println!("{}",v.iter().map(|n| n.name).collect::<String>());
+    println!("{}", v.iter().map(|n| n.name).collect::<String>());
     Ok(())
 }
 
-#[derive(PartialEq,Eq,Debug)]
+#[derive(PartialEq, Eq, Debug)]
 struct Work {
     node: Node,
-    t: usize
+    t: usize,
 }
 
 impl Work {
-    fn new(n: Node, starttime: usize) -> Work{
-        Work { node: n, t: starttime }
+    fn new(n: Node, starttime: usize) -> Work {
+        Work {
+            node: n,
+            t: starttime,
+        }
     }
     fn finish_in(&self) -> usize {
         self.t + self.worksize()
@@ -161,13 +170,13 @@ fn parallel_topo(v: &Vec<Node>, worker: usize) -> (Vec<Node>, usize) {
     let mut t = 0;
     let mut done = Vec::new();
 
-    while todo.len() > 0 || q.len() > 0{
+    while todo.len() > 0 || q.len() > 0 {
         while q.len() < worker {
             match next_work(&todo, &done) {
-                Some(i) => { 
+                Some(i) => {
                     let n = todo.swap_remove(i);
                     q.push(Work::new(n, t));
-                },
+                }
                 None => break,
             }
         }
@@ -186,6 +195,10 @@ pub fn star2(lines: impl Iterator<Item = std::io::Result<String>>) -> super::Sta
     let g = Graph::build(lines)?;
     let v: Vec<Node> = g.edges.values().cloned().collect();
     let (v, t) = parallel_topo(&v, 5);
-    println!("Final order: {} finished in {}",v.iter().map(|n| n.name).collect::<String>(), t);
+    println!(
+        "Final order: {} finished in {}",
+        v.iter().map(|n| n.name).collect::<String>(),
+        t
+    );
     Ok(())
 }
