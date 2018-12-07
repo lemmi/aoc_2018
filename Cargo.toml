@@ -2,5 +2,8 @@
 name = "aoc_2018"
 version = "0.1.0"
 authors = ["lemmi <lemmi@nerd2nerd.org>"]
+edition = "2018"
 
 [dependencies]
+itertools = "0.7.11"
+chrono = "0.4.6"
