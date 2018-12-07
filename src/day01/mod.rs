@@ -4,7 +4,7 @@ use std::collections::HashSet;
 
 pub fn star1(lines: impl Iterator<Item = io::Result<String>>) -> super::StarResult {
     let s: isize = lines.map(|l| l.unwrap().parse::<isize>().unwrap()).sum();
-    println!("{}", s);
+    println!("Frequency is {}", s);
     Ok(())
 }
 
@@ -15,7 +15,7 @@ pub fn star2(lines: impl Iterator<Item = std::io::Result<String>>) -> super::Sta
 
     for f in freqs {
         if !seen.insert(f) {
-            println!("{}", f);
+            println!("Seen {} twice", f);
             break;
         }
     }
