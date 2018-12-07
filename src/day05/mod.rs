@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
-use std::iter::FromIterator;
-use std::iter::repeat;
 use std::io;
+use std::iter::repeat;
+use std::iter::FromIterator;
 
 use super::*;
 
@@ -12,7 +12,7 @@ fn can_react(a: char, b: char) -> bool {
 fn react(v: &Vec<char>) -> Vec<char> {
     let mut ret = Vec::new();
     if v.len() < 2 {
-        return ret
+        return ret;
     }
 
     let mut last = v.first().cloned();
@@ -21,14 +21,14 @@ fn react(v: &Vec<char>) -> Vec<char> {
             Some(l) => {
                 if !can_react(l, *c) {
                     ret.push(l);
-        last = Some(*c);
+                    last = Some(*c);
                 } else {
                     last = None;
                 }
-            },
+            }
             None => {
-        last = Some(*c);
-            },
+                last = Some(*c);
+            }
         }
     }
     if let Some(l) = last {
@@ -50,29 +50,49 @@ fn react_full(v: &Vec<char>) -> Vec<char> {
 }
 
 fn remove_and_react_full(v: &Vec<char>, a: char) -> Vec<char> {
-    let v = v.iter().filter(|c| c.to_ascii_lowercase() != a).cloned().collect();
+    let v = v
+        .iter()
+        .filter(|c| c.to_ascii_lowercase() != a)
+        .cloned()
+        .collect();
     react_full(&v)
 }
 
 pub fn star1(lines: impl Iterator<Item = io::Result<String>>) -> StarResult {
-    let poly = lines.take(1).next().ok_or("No input")??.chars().collect::<Vec<_>>();
+    let poly = lines
+        .take(1)
+        .next()
+        .ok_or("No input")??
+        .chars()
+        .collect::<Vec<_>>();
     let reacted = react_full(&poly);
     println!("Reduced polymer is {} long", reacted.len());
     Ok(())
 }
 
 pub fn star2(lines: impl Iterator<Item = std::io::Result<String>>) -> super::StarResult {
-    let poly = lines.take(1).next().ok_or("No input")??.chars().collect::<Vec<_>>();
+    let poly = lines
+        .take(1)
+        .next()
+        .ok_or("No input")??
+        .chars()
+        .collect::<Vec<_>>();
     let alphabet = BTreeSet::from_iter(poly.iter().map(|c| c.to_ascii_lowercase()));
     println!("Alphabet: {:?}", alphabet);
 
-    let (a, p) = alphabet.iter()
+    let (a, p) = alphabet
+        .iter()
         .zip(repeat(poly))
-        .map(|(a,p)| (a,remove_and_react_full(&p,*a)))
-        .min_by_key(|(_,p)| p.len())
+        .map(|(a, p)| (a, remove_and_react_full(&p, *a)))
+        .min_by_key(|(_, p)| p.len())
         .ok_or("Unable to find best polymer")?;
 
-    println!("Best polymer found by removing '{}' with length {}: {}", a, p.len(), String::from_iter(p));
+    println!(
+        "Best polymer found by removing '{}' with length {}: {}",
+        a,
+        p.len(),
+        String::from_iter(p)
+    );
 
     Ok(())
 }
