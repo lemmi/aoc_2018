@@ -33,13 +33,7 @@ impl std::str::FromStr for Rec {
 
 impl Rec {
     fn new(x: usize, y: usize, w: usize, h: usize, id: Option<usize>) -> Rec {
-        Rec {
-            x: x,
-            y: y,
-            w: w,
-            h: h,
-            id: id,
-        }
+        Rec { x, y, w, h, id }
     }
     fn area(&self) -> usize {
         self.w * self.h
@@ -76,13 +70,13 @@ impl Rec {
     }
 }
 
-fn check_not_intersect(v: &Vec<Rec>) -> Option<Rec> {
+fn check_not_intersect(v: &[Rec]) -> Option<Rec> {
     'outer: for (i, a) in v.iter().enumerate() {
         for (j, b) in v.iter().enumerate() {
             if i == j {
                 continue;
             }
-            if let Some(_) = a.intersect(b) {
+            if a.intersect(b).is_some() {
                 continue 'outer;
             }
         }
@@ -91,7 +85,7 @@ fn check_not_intersect(v: &Vec<Rec>) -> Option<Rec> {
     None
 }
 
-fn bounding_box(v: &Vec<Rec>) -> Rec {
+fn bounding_box(v: &[Rec]) -> Rec {
     v.iter().fold(v[0], |acc, r| acc.bounding_box(r))
 }
 
