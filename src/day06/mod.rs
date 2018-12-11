@@ -12,7 +12,7 @@ struct Point {
 
 impl Point {
     fn new(x: isize, y: isize) -> Point {
-        Point { x: x, y: y }
+        Point { x, y }
     }
 
     fn dist(&self, other: &Point) -> isize {
@@ -38,7 +38,7 @@ impl FromStr for Point {
     }
 }
 
-fn bounding_box(points: &Vec<Point>, fatten: isize) -> (Point, Point) {
+fn bounding_box(points: &[Point], fatten: isize) -> (Point, Point) {
     let minx = points
         .iter()
         .map(|p| p.x)
@@ -66,7 +66,7 @@ fn bounding_box(points: &Vec<Point>, fatten: isize) -> (Point, Point) {
     )
 }
 
-fn far_points(points: &Vec<Point>) -> HashSet<Point> {
+fn far_points(points: &[Point]) -> HashSet<Point> {
     let (bbul, bblr) = bounding_box(points, 0);
     let bbw = bblr.x - bbul.x + 1;
     let bbh = bblr.y - bbul.y + 1;
@@ -93,7 +93,7 @@ fn far_points(points: &Vec<Point>) -> HashSet<Point> {
     ret
 }
 
-fn closest_to(points: &Vec<Point>, p: Point) -> Option<Point> {
+fn closest_to(points: &[Point], p: Point) -> Option<Point> {
     let c = points
         .iter()
         .min_by_key(|ps| ps.dist(&p))
@@ -113,12 +113,12 @@ fn within_box(bb: (Point, Point)) -> impl Iterator<Item = (isize, isize)> {
     let (ul, lr) = bb;
     let w = (lr.x - ul.x + 1) as usize;
 
-    (ul.x..lr.x + 1)
+    (ul.x..=lr.x)
         .cycle()
-        .zip((ul.y..lr.y + 1).flat_map(move |y| std::iter::repeat(y).take(w)))
+        .zip((ul.y..=lr.y).flat_map(move |y| std::iter::repeat(y).take(w)))
 }
 
-fn coverage(points: &Vec<Point>) -> HashMap<Point, usize> {
+fn coverage(points: &[Point]) -> HashMap<Point, usize> {
     let mut areas = HashMap::new();
     for (x, y) in within_box(bounding_box(points, 0)) {
         let p = Point::new(x, y);
