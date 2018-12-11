@@ -14,6 +14,10 @@ mod day04;
 mod day05;
 mod day06;
 mod day07;
+mod day08;
+mod day09;
+mod day10;
+mod day11;
 
 #[derive(Debug)]
 pub enum StarError {
@@ -86,6 +90,20 @@ fn main() -> Result<(), StarError> {
         7 => {
             day07::star1(solve("day07/input")?)?;
             day07::star2(solve("day07/input")?)?;
+        }
+        8 => {
+            day08::star1(solve("day08/input")?)?;
+            day08::star2(solve("day08/input")?)?;
+        }
+        9 => {
+            day09::star1(solve("day09/input")?)?;
+            day09::star2(solve("day09/input")?)?;
+        }
+        10 => {
+            day10::star12(solve("day10/input")?)?;
+        }
+        11 => {
+            //day11::star1(solve("day10/input")?)?;
         }
         _ => (),
     }
