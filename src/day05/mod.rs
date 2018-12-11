@@ -9,7 +9,7 @@ fn can_react(a: char, b: char) -> bool {
     a.to_ascii_lowercase() == b.to_ascii_lowercase() && a != b
 }
 
-fn react(v: &Vec<char>) -> Vec<char> {
+fn react(v: &[char]) -> Vec<char> {
     let mut ret = Vec::new();
     if v.len() < 2 {
         return ret;
@@ -37,8 +37,8 @@ fn react(v: &Vec<char>) -> Vec<char> {
     ret
 }
 
-fn react_full(v: &Vec<char>) -> Vec<char> {
-    let mut poly = v.clone();
+fn react_full(v: &[char]) -> Vec<char> {
+    let mut poly = v.to_owned();
     loop {
         let l = poly.len();
         poly = react(&poly);
@@ -49,12 +49,12 @@ fn react_full(v: &Vec<char>) -> Vec<char> {
     poly
 }
 
-fn remove_and_react_full(v: &Vec<char>, a: char) -> Vec<char> {
+fn remove_and_react_full(v: &[char], a: char) -> Vec<char> {
     let v = v
         .iter()
         .filter(|c| c.to_ascii_lowercase() != a)
         .cloned()
-        .collect();
+        .collect::<Vec<_>>();
     react_full(&v)
 }
 
