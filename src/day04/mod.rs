@@ -46,14 +46,14 @@ fn parse_event(e: &str, guardhint: usize) -> Result<Event, super::StarError> {
         Some("Guard ") => {
             let guard_id = tokens
                 .next()
-                .ok_or(format!("Unexpected line ending \"{}\"", e))?
+                .ok_or_else(|| format!("Unexpected line ending \"{}\"", e))?
                 .split_whitespace()
                 .next()
-                .ok_or(format!("Expected another whitespace \"{}\"", e))?
+                .ok_or_else(|| format!("Expected another whitespace \"{}\"", e))?
                 .parse::<usize>()?;
             Ok(Event {
                 timestamp: date,
-                guard_id: guard_id,
+                guard_id,
                 state: GuardState::Begin,
             })
         }
@@ -127,7 +127,7 @@ impl Shift {
 
 impl<'a> From<&'a [Event]> for Shift {
     fn from(events: &[Event]) -> Self {
-        if events.len() == 0 {
+        if events.is_empty() {
             panic!("Can't build shift from no events");
         }
         let mut s: Shift = Shift::default();
@@ -144,7 +144,7 @@ impl<'a> From<&'a [Event]> for Shift {
     }
 }
 
-fn group_shifts(events: &Vec<Event>) -> Vec<Shift> {
+fn group_shifts(events: &[Event]) -> Vec<Shift> {
     let mut ret: Vec<Shift> = Vec::new();
     for group in events.iter().map(|e| vec![*e]).coalesce(|mut xe, ye| {
         if ye[0].state == GuardState::Begin {
@@ -160,7 +160,7 @@ fn group_shifts(events: &Vec<Event>) -> Vec<Shift> {
 }
 
 #[allow(dead_code)]
-fn print_events(shifts: &Vec<Shift>) {
+fn print_events(shifts: &[Shift]) {
     println!("Date   ID     Minute");
     println!("              000000000011111111112222222222333333333344444444445555555555");
     println!("              012345678901234567890123456789012345678901234567890123456789");
@@ -169,7 +169,7 @@ fn print_events(shifts: &Vec<Shift>) {
     }
 }
 
-fn find_worst_guard(s: &Vec<Shift>) -> (usize, usize) {
+fn find_worst_guard(s: &[Shift]) -> (usize, usize) {
     let mut asleep = HashMap::new();
 
     for e in s {
@@ -184,7 +184,7 @@ fn find_worst_guard(s: &Vec<Shift>) -> (usize, usize) {
     (*gid, *slept)
 }
 
-fn find_worst_minute(shifts: &Vec<Shift>, gid: usize) -> (usize, usize) {
+fn find_worst_minute(shifts: &[Shift], gid: usize) -> (usize, usize) {
     let mut minutes = [0usize; 60];
     for s in shifts.iter().filter(|e| e.guard_id == gid) {
         for (i, m) in minutes.iter_mut().enumerate() {
@@ -236,7 +236,7 @@ pub fn star2(lines: impl Iterator<Item = std::io::Result<String>>) -> super::Sta
 
     let mut stat = HashMap::new();
     for (gid, ss) in shifts.iter().group_by(|s| s.guard_id).into_iter() {
-        let (minute, count) = find_worst_minute(&ss.cloned().collect(), gid);
+        let (minute, count) = find_worst_minute(&ss.cloned().collect::<Vec<Shift>>(), gid);
         stat.insert(gid, (minute, count));
     }
 
