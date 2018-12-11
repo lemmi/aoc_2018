@@ -15,7 +15,7 @@ struct Node {
 
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Node) -> Option<Ordering> {
-        let p = if self.dep == other.dep {
+        if self.dep == other.dep {
             Some(self.name.cmp(&other.name))
         } else if self.dep.contains(&other.name) {
             Some(Ordering::Greater)
@@ -23,8 +23,7 @@ impl PartialOrd for Node {
             Some(Ordering::Less)
         } else {
             None
-        };
-        p
+        }
     }
 }
 
@@ -43,7 +42,7 @@ impl Display for Node {
 impl Node {
     fn new(name: char) -> Node {
         Node {
-            name: name,
+            name,
             dep: BTreeSet::new(),
         }
     }
@@ -71,7 +70,7 @@ impl Graph {
 
     fn build(lines: impl Iterator<Item = io::Result<String>>) -> Result<Graph, StarError> {
         let mut g = Self::new();
-        for r in lines.map(|l| l.map_err(|e| StarError::from(e))) {
+        for r in lines.map(|l| l.map_err(StarError::from)) {
             let s = r?;
             let w: Vec<_> = s.split_whitespace().collect();
             if w.len() != 10 {
@@ -85,8 +84,8 @@ impl Graph {
     }
 
     fn add(&mut self, dep: char, node: char) {
-        self.edges.entry(dep).or_insert(Node::new(dep));
-        let v = self.edges.entry(node).or_insert(Node::new(node));
+        self.edges.entry(dep).or_insert_with(|| Node::new(dep));
+        let v = self.edges.entry(node).or_insert_with(|| Node::new(node));
         v.add(dep);
     }
 }
@@ -99,18 +98,18 @@ impl Display for Graph {
     }
 }
 
-fn next_work(todo: &Vec<Node>, done: &Vec<Node>) -> Option<usize> {
+fn next_work(todo: &[Node], done: &[Node]) -> Option<usize> {
     todo.iter()
         .enumerate()
         .filter(|(_, m)| m.satisfied(done.iter().map(|n| n.name)))
-        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or(a.name.cmp(&b.name)))
+        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap_or_else(|| a.name.cmp(&b.name)))
         .map(|(i, _)| i)
 }
 
-fn toposort(v: &Vec<Node>) -> Vec<Node> {
+fn toposort(v: &[Node]) -> Vec<Node> {
     let mut done: Vec<Node> = Vec::new();
     let mut todo = v.to_owned();
-    while todo.len() > 0 {
+    while !todo.is_empty() {
         let m = next_work(&todo, &done);
 
         match m {
@@ -164,18 +163,18 @@ impl PartialOrd for Work {
     }
 }
 
-fn parallel_topo(v: &Vec<Node>, worker: usize) -> (Vec<Node>, usize) {
+fn parallel_topo(v: &[Node], worker: usize) -> (Vec<Node>, usize) {
     let mut q = BinaryHeap::new();
     let mut todo = v.to_owned();
     let mut t = 0;
     let mut done = Vec::new();
 
-    while todo.len() > 0 || q.len() > 0 {
+    while !todo.is_empty() || !q.is_empty() {
         while q.len() < worker {
             match next_work(&todo, &done) {
                 Some(i) => {
-                    let n = todo.swap_remove(i);
-                    q.push(Work::new(n, t));
+                    let node = todo.swap_remove(i);
+                    q.push(Work::new(node, t));
                 }
                 None => break,
             }
