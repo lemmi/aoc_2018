@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt::{self, Display};
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Lines};
+use std::time::Instant;
 
 extern crate chrono;
 extern crate itertools;
@@ -18,6 +19,7 @@ mod day08;
 mod day09;
 mod day10;
 mod day11;
+mod day12;
 
 #[derive(Debug)]
 pub enum StarError {
@@ -66,6 +68,7 @@ pub type StarResult = Result<(), StarError>;
 fn main() -> Result<(), StarError> {
     let local: DateTime<Local> = Local::now();
     println!("Running day {}", local.day());
+    let start = Instant::now();
     match local.day() {
         1 => {
             day01::star1(solve("day01/input")?)?;
@@ -103,10 +106,16 @@ fn main() -> Result<(), StarError> {
             day10::star12(solve("day10/input")?)?;
         }
         11 => {
-            //day11::star1(solve("day10/input")?)?;
+            day11::star1(9221);
+            day11::star2(9221);
+        }
+        12 => {
+            day12::star1(solve("day12/input")?)?;
+            day12::star2(solve("day12/input")?)?;
         }
         _ => (),
     }
+    println!("Took {:?}", start.elapsed());
     Ok(())
 }
 
