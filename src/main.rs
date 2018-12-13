@@ -20,6 +20,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 
 #[derive(Debug)]
 pub enum StarError {
@@ -64,6 +65,9 @@ impl<'a> From<&'a str> for StarError {
 impl Error for StarError {}
 
 pub type StarResult = Result<(), StarError>;
+fn map_error(r: io::Result<String>) -> Result<String, StarError> {
+    r.map_err(|e| e.into())
+}
 
 fn main() -> Result<(), StarError> {
     let local: DateTime<Local> = Local::now();
@@ -112,6 +116,10 @@ fn main() -> Result<(), StarError> {
         12 => {
             day12::star1(solve("day12/input")?)?;
             day12::star2(solve("day12/input")?)?;
+        }
+        13 => {
+            day13::star1(solve("day13/input")?)?;
+            day13::star2(solve("day13/input")?)?;
         }
         _ => (),
     }
