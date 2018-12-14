@@ -21,6 +21,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 
 #[derive(Debug)]
 pub enum StarError {
@@ -120,6 +121,10 @@ fn main() -> Result<(), StarError> {
         13 => {
             day13::star1(solve("day13/input")?)?;
             day13::star2(solve("day13/input")?)?;
+        }
+        14 => {
+            day14::star1(702_831)?;
+            day14::star2(702_831)?;
         }
         _ => (),
     }
